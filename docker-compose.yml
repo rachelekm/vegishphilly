@@ -1,14 +1,53 @@
 # As of yet, more modern compose file versions (v3) do not support waiting for another container to be "healthy"
 version: "2.4"
 services:
+  database:
+    image: quay.io/azavea/postgis:3-postgres12.4-slim
+    environment:
+      - POSTGRES_DB=vegishphilly
+      - POSTGRES_PASSWORD=vegishphilly
+      - POSTGRES_USER=vegishphilly
+    healthcheck:
+      test: pg_isready -U vegishphilly
+      interval: 3s
+      timeout: 3s
+      retries: 3
+
+  django:
+    image: vegishphilly
+    environment:
+      - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=vegishphilly
+      - POSTGRES_PASSWORD=vegishphilly
+      - POSTGRES_DB=vegishphilly
+      - DJANGO_ENV=Development
+      - DJANGO_SECRET_KEY=secret
+      - DJANGO_LOG_LEVEL=INFO
+      - VEGISHPHILLY_APP_HOME=${VEGISHPHILLY_APP_HOME:-http://localhost:3033}
+    build:
+      context: ./django
+      dockerfile: Dockerfile
+    volumes:
+      - ./django:/usr/local/src/django
+    working_dir: /usr/local/src/django
+    depends_on:
+      database:
+        condition: service_healthy
+    command:
+      - "-b :8033"
+      - "--reload"
+      - "--access-logfile=-"
+      - "--error-logfile=-"
+      - "--log-level=info"
+      - "vegishphilly.wsgi"
+
   app:
     image: node:12-slim
     stdin_open: true
     working_dir: /usr/local/src
     environment:
       - REACT_APP_GIT_COMMIT=${REACT_APP_GIT_COMMIT:-latest}
-      - CHOKIDAR_USEPOLLING=true
-      - CHOKIDAR_INTERVAL=100
       - PORT=4567
     volumes:
         - ./src/app:/usr/local/src

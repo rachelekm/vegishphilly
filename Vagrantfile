@@ -8,6 +8,9 @@ ANSIBLE_VERSION = "2.9.*"
 Vagrant.configure(2) do |config|
   config.vm.box = "bento/ubuntu-20.04"
 
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
+
   config.vm.synced_folder "./", "/vagrant"
   config.vm.synced_folder "~/.aws", "/home/vagrant/.aws"
 

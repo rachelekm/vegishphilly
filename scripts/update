@@ -23,5 +23,21 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         docker-compose \
             run --rm --no-deps app \
             yarn install
+
+        # Bring up PostgreSQL and Django in a way that respects
+        # configured service health checks.
+        docker-compose \
+                -f docker-compose.yml \
+                up -d database
+
+        # Apply any outstanding Django migrations
+        # ./scripts/manage migrate --noinput
+
+        # Collect Django static files
+        # ./scripts/manage collectstatic --noinput
+
+        docker-compose \
+                -f docker-compose.yml \
+                stop
     fi
 fi

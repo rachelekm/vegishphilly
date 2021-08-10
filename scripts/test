@@ -23,6 +23,6 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
             yarn test --watchAll=false
 
         # Execute Django test suite
-        ./scripts/manage test core
+        ./scripts/manage test
     fi
 fi

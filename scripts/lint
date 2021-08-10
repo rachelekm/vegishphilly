@@ -26,5 +26,15 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         docker-compose \
             run --rm --entrypoint ./node_modules/.bin/eslint \
             app src/ --ext .js --ext .jsx
+        
+        # Check format of Django application source code
+        docker-compose \
+            run --rm --no-deps --entrypoint black django \
+            --check --diff .
+
+        # Lint Django application source code
+        docker-compose \
+            run --rm --no-deps --entrypoint flake8 django \
+            --exclude settings.py,manage.py,*.pyc,api/migrations/*
     fi
 fi

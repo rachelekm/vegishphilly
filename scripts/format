@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${vegishphilly_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n "Usage: $(basename "$0")
+
+Runs formatters.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        # Format JavaScript source code
+        docker-compose \
+            run --rm --no-deps --entrypoint "bash -c" app \
+            yarn run format
+
+        # Format Django application source code
+        docker-compose \
+            run --rm --no-deps --entrypoint black django .
+    fi
+fi

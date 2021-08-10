@@ -47,6 +47,8 @@ vagrant ssh
 | `clean`        | Free disk space by cleaning up dangling Docker images         |
 | `console`      | Run interactive shell inside application container            |
 | `lint`         | Lint source code                                              |
+| `format`       | Format the codebase (using Prettier for JS, Black for Python) |
+| `manage`       | Run Django management commands                                |
 | `server`       | Run Docker Compose services                                   |
 | `setup`        | Provision Vagrant VM and run `update`                         |
 | `test`         | Run unit tests                                                |
