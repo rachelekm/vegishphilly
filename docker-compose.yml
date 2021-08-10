@@ -42,18 +42,19 @@ services:
       - "--log-level=info"
       - "vegishphilly.wsgi"
 
-  app:
+  client:
     image: node:12-slim
     stdin_open: true
-    working_dir: /usr/local/src
+    working_dir: /usr/local/src/client
     environment:
       - REACT_APP_GIT_COMMIT=${REACT_APP_GIT_COMMIT:-latest}
       - PORT=4567
     volumes:
-        - ./src/app:/usr/local/src
-        - ./dist:/usr/local/src/build
-        # Ensure node_modules cache doesn't clash with other jobs on CI.
-        - /var/cache/vegishphilly-node-modules:/usr/local/src/node_modules
+      - ./client:/usr/local/src/client
+      - ./django/static:/usr/local/src/client/build
+       # Ensure node_modules cache doesn't clash with other jobs on CI.
+      - /var/cache/treetective-client-node-modules:/usr/local/src/client/node_modules
+      - $HOME/.cache/treetective:/usr/local/share/.cache/yarn
     command: yarn start
 
   shellcheck:

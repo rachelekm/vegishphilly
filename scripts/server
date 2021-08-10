@@ -17,6 +17,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     if [[ "${1:-}" = "--help" ]]; then
         usage
     else
-        docker-compose up database django app
+        docker-compose up database django client
     fi
 fi

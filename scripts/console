@@ -12,7 +12,7 @@ function usage() {
 Login to a running Docker container's shell.
 
 Options:
-    app       App container
+    client    Client container
     database  Database container
     django    Django container
     nginx     Nginx container
@@ -21,7 +21,7 @@ Options:
 }
 
 case $1 in
-    app|django|nginx) NORMAL_CONTAINER=1 ;;
+    client|django|nginx) NORMAL_CONTAINER=1 ;;
     database)         DATABASE_CONTAINER=1 ;;
     help|*)           usage; exit 1 ;;
 esac

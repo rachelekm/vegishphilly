@@ -19,7 +19,7 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
     else
         # Execute React test suite
         docker-compose \
-            run --rm --no-deps -e CI app \
+            run --rm --no-deps -e CI client \
             yarn test --watchAll=false
 
         # Execute Django test suite

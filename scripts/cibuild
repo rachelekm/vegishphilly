@@ -31,7 +31,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             run --rm --no-deps \
             -e NODE_ENV="${NODE_ENV:-production}" \
             -e INSTALL_ENV="${INSTALL_ENV:-internal}" \
-            -e REACT_APP_GIT_COMMIT="${GIT_COMMIT}" app \
+            -e REACT_APP_GIT_COMMIT="${GIT_COMMIT}" client \
             yarn build
     fi
 fi

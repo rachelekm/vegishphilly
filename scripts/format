@@ -19,7 +19,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     else
         # Format JavaScript source code
         docker-compose \
-            run --rm --no-deps --entrypoint "bash -c" app \
+            run --rm --no-deps --entrypoint "bash -c" client \
             yarn run format
 
         # Format Django application source code
