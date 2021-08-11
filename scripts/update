@@ -31,7 +31,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
                 up -d database
 
         # Apply any outstanding Django migrations
-        ./scripts/manage migrate --noinput
+        # ./scripts/manage migrate --noinput
 
         # Collect Django static files
         ./scripts/manage collectstatic --noinput
