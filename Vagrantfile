@@ -12,28 +12,17 @@ Vagrant.configure(2) do |config|
   config.ssh.password = "vagrant"
 
   config.vm.synced_folder "./", "/vagrant"
-  config.vm.synced_folder "~/.aws", "/home/vagrant/.aws"
+  # config.vm.synced_folder "~/.aws", "/home/vagrant/.aws"
 
   config.vm.provider :virtualbox do |vb|
-    vb.memory = 2048
-    vb.cpus = 2
+    vb.memory = 4096
+    vb.cpus = 4
   end
-
-  # Civic Apps Port Mappings
-  # Uncomment those you need, delete those you don't
-  # Remove this comment when done
-
-  # Postgres
-  # config.vm.network :forwarded_port, guest: 5432, host: 5432
-
-  # Gunicorn (Django)
-  # config.vm.network :forwarded_port, guest: 8080, host: 8080
-
-  # Debug server (Python)
-  # config.vm.network :forwarded_port, guest: 8081, host: 8081
 
   # React
   config.vm.network :forwarded_port, guest: 4567, host: 4567
+  # Django
+  config.vm.network :forwarded_port, guest: 8033, host: 8033
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.compatibility_mode = "2.0"

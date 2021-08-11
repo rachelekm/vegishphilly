@@ -24,8 +24,8 @@ SECRET_KEY = "django-insecure-s*99ujn(=fp%+s$^rq)okgmg)r*ys4n440^-669@m1#hog(n&3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# Allowing all JUST for dev environment
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "api",
+    "django.contrib.gis",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
@@ -83,8 +84,6 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
-
-AUTH_USER_MODEL = "api.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

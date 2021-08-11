@@ -1,5 +1,4 @@
-# As of yet, more modern compose file versions (v3) do not support waiting for another container to be "healthy"
-version: "2.4"
+version: "3.1"
 services:
   database:
     image: quay.io/azavea/postgis:3-postgres12.4-slim
@@ -21,9 +20,6 @@ services:
       - POSTGRES_USER=vegishphilly
       - POSTGRES_PASSWORD=vegishphilly
       - POSTGRES_DB=vegishphilly
-      - DJANGO_ENV=Development
-      - DJANGO_SECRET_KEY=secret
-      - DJANGO_LOG_LEVEL=INFO
       - VEGISHPHILLY_APP_HOME=${VEGISHPHILLY_APP_HOME:-http://localhost:3033}
     build:
       context: ./django
@@ -31,6 +27,8 @@ services:
     volumes:
       - ./django:/usr/local/src/django
     working_dir: /usr/local/src/django
+    ports:
+      - "8033:8033"
     depends_on:
       database:
         condition: service_healthy
@@ -45,16 +43,17 @@ services:
   client:
     image: node:12-slim
     stdin_open: true
-    working_dir: /usr/local/src/client
     environment:
-      - REACT_APP_GIT_COMMIT=${REACT_APP_GIT_COMMIT:-latest}
       - PORT=4567
     volumes:
       - ./client:/usr/local/src/client
       - ./django/static:/usr/local/src/client/build
        # Ensure node_modules cache doesn't clash with other jobs on CI.
-      - /var/cache/treetective-client-node-modules:/usr/local/src/client/node_modules
-      - $HOME/.cache/treetective:/usr/local/share/.cache/yarn
+      - /var/cache/vegishphilly-client-node-modules:/usr/local/src/client/node_modules
+      - $HOME/.cache/vegishphilly:/usr/local/share/.cache/yarn
+    working_dir: /usr/local/src/client
+    ports: 
+      - "4567:4567"
     command: yarn start
 
   shellcheck:
@@ -62,3 +61,6 @@ services:
     volumes:
       - ./:/usr/local/src
     working_dir: /usr/local/src
+
+volumes:
+  pgdata:

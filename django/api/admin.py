@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import User
+from api.models import Restaurant, Rating
 
-admin.site.register(User, UserAdmin)
+admin.site.register(Restaurant)
+admin.site.register(Rating)

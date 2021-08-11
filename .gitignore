@@ -6,6 +6,10 @@ deployment/ansible/roles/azavea.*
 # Vagrant
 .vagrant
 
+# Django
+django/static/
+__pycache__/
+
 # JS
 node_modules/
 npm-debug.log

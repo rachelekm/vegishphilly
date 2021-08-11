@@ -2,19 +2,8 @@
   "name": "vegishphilly",
   "version": "0.1.0",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/azavea/vegishphilly.git"
-  },
-  "author": "Azavea",
-  "bugs": {
-    "url": "https://github.com/azavea/vegishphilly/issues"
-  },
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "axios": "^0.19.2",
+    "axios": "^0.20.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^5.2.0",
@@ -24,12 +13,20 @@
     "redux": "^4.0.5",
     "redux-act": "^1.8.0",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "typescript": "4.0.3"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test"
+    "start": "BROWSER=none react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "compile": "tsc",
+    "watch": "tsc --watch",
+    "fix": "eslint --fix 'src/**/*.{ts,tsx}'",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "format": "prettier --write 'src/**/*.{ts,tsx,json,css}'",
+    "check-format": "prettier --check 'src/**/*.{ts,tsx,json,css}'"
   },
   "eslintConfig": {
     "extends": "react-app"

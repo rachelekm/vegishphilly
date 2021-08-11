@@ -1,5 +1,5 @@
 version: "2.4"
 services:
-  client:
+  django:
     ports:
-      - 4567:4567
+      - 8033:8033

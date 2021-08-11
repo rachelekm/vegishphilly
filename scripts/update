@@ -19,25 +19,25 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         # Ensure container images are current
         docker-compose build
 
-        # Update Yarn dependencies
+        # Update frontend, Yarn dependencies and build static asset bundle
         docker-compose \
-            run --rm --no-deps client \
-            yarn install
+            run --rm --no-deps --entrypoint "bash -c" client \
+            "yarn install && yarn compile && yarn build"
 
         # Bring up PostgreSQL and Django in a way that respects
         # configured service health checks.
         docker-compose \
-                -f docker-compose.yml \
-                up -d database
+            -f docker-compose.yml \
+            up -d database
 
         # Apply any outstanding Django migrations
-        # ./scripts/manage migrate --noinput
+        ./scripts/manage migrate --noinput
 
         # Collect Django static files
         ./scripts/manage collectstatic --noinput
 
         docker-compose \
-                -f docker-compose.yml \
-                stop
+            -f docker-compose.yml \
+            stop
     fi
 fi
