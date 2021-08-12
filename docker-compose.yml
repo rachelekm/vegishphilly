@@ -20,6 +20,7 @@ services:
       - POSTGRES_USER=vegishphilly
       - POSTGRES_PASSWORD=vegishphilly
       - POSTGRES_DB=vegishphilly
+      - DJANGO_SECRET_KEY=secret
       - VEGISHPHILLY_APP_HOME=${VEGISHPHILLY_APP_HOME:-http://localhost:3033}
     build:
       context: ./django
