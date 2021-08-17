@@ -16,17 +16,28 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
+from django.urls import include, path
 from . import settings
+
+from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
+    TokenVerifyView,
 )
+
 from api import views as api_views
+
+router = routers.DefaultRouter()
+router.register(
+    "user",
+    api_views.UserViewSet,
+    basename="User",
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("users/", api_views.UserList.as_view()),
-    path("users/<int:pk>/", api_views.UserDetail.as_view()),
+    path("user/", include(router.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

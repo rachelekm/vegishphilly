@@ -7,3 +7,4 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username"]
         write_only_fields = ("password",)
+        read_only_fields = ["id", "username"]
