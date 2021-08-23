@@ -13,7 +13,7 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
 
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
+class UserViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer

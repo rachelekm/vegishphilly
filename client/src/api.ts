@@ -112,7 +112,7 @@ export function logoutApi() {
 export async function fetchCurrentUser(): Promise<User> {
     return new Promise((resolve, reject) => {
         api
-            .get(`/api/user/`)
+            .get(`/api/user/current`)
             .then((response) => decodeResponse(userDecoder, response.data).then(resolve).catch(reject))
             .catch((error) => {
                 return error.response
