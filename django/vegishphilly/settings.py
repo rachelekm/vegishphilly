@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+import requests
 from pathlib import Path
 from datetime import timedelta
 
@@ -36,8 +37,11 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django_extensions",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "rest_framework",
+    "rest_framework.authtoken",
     "api.apps.ApiConfig",
 ]
 
