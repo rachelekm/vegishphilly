@@ -5,6 +5,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "axios": "^0.21.1",
+    "mapbox-gl": "^2.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.15",
+    "@types/mapbox-gl": "^2.1.2",
     "@types/react": "^17.0.18",
     "@types/react-dom": "^17.0.9",
     "@types/react-redux": "^7.1.18",

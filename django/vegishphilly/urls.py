@@ -34,10 +34,10 @@ router.register(
     api_views.UserViewSet,
     basename="User",
 )
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include(router.urls)),
+    path("api/restaurants/", api_views.RestaurantList.as_view(), name="restaurants"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

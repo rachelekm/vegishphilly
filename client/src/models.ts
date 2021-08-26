@@ -1,4 +1,5 @@
 import { History } from "history";
+import { Feature, FeatureCollection, Point as GeojsonPoint } from "geojson";
 
 export interface LoginCredentials {
     readonly username?: string;
@@ -36,3 +37,17 @@ export interface User {
     readonly username: string;
 
 };
+
+export interface RestaurantProperties {
+    readonly name: string;
+    readonly address: string;
+    readonly is_approved: boolean
+}
+
+type NoBbox<T> = Omit<T, "bbox" | "id">;
+
+export type Point = NoBbox<GeojsonPoint>;
+
+export type RestaurantFeature = NoBbox<Feature<Point, RestaurantProperties>>;
+
+export type Restaurants = NoBbox<FeatureCollection<GeojsonPoint, RestaurantProperties>>;
