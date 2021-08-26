@@ -3,11 +3,34 @@
 }
 
 .map-component {
-  width: 100vw;
+  width: 70vw;
   height: 100vh;
+  position: absolute;
+  right: 0;
 }
 
 .map-container {
   height: 100%;
   width: 100%;
+}
+
+.sidebar{
+  height: 100vh;
+  width: 30vw;
+  background-color: white;
+  position: absolute;
+  left: 0;
+  flex-direction: column;
+}
+
+.search-box, .restaurant-item{
+  border: 2px solid grey;
+}
+
+.search-box{
+  height: 10%;
+}
+
+.sidebar-list {
+  height: 75%;
 }

@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { UserState } from "../reducers/user";
 import { userFetch } from "../actions/user";
 import Map from "../components/Map";
+import Sidebar from "../components/Sidebar";
 
 interface HomePageProps {
     readonly loggedInUser: UserState
@@ -20,6 +21,7 @@ function HomePage({ loggedInUser }: HomePageProps) {
 
     return (
         <Flex>
+            <Sidebar />
             <Map />
         </Flex>
     );
