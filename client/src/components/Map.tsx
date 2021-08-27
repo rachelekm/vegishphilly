@@ -104,7 +104,7 @@ function Map({ restaurants }: MapProps) {
             setInitializedMap(map);
         });
 
-        map.on("move", () => {
+        map.on("moveend", () => {
             setMapData({
                 center: map.getCenter(),
                 zoom: map.getZoom(),

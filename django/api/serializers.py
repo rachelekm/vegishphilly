@@ -17,7 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
 class RestaurantSerializer(GeoFeatureModelSerializer):
     """A class to serialize restaurants as GeoJSON compatible data"""
 
+    average_rating = serializers.IntegerField()
+
     class Meta:
         model = Restaurant
         geo_field = "loc"
-        fields = ("id", "name", "address", "is_approved", "user")
+        fields = ("id", "name", "address", "is_approved", "average_rating")
