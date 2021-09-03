@@ -3,7 +3,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis.filters import InBBoxFilter
-from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import User
 from api.models import Restaurant
 from api.serializers import UserSerializer, RestaurantSerializer
@@ -24,8 +23,6 @@ class RestaurantList(generics.ListAPIView):
     bbox_filter_field = "loc"
     filter_backends = (InBBoxFilter,)
     bbox_filter_include_overlapping = True  # Optional
-    pagination_class = PageNumberPagination
-    page_size = 5
 
 
 # todos:

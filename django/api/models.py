@@ -10,6 +10,9 @@ class Restaurant(models.Model):
     is_approved = models.BooleanField(default=False)
     user = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Rating")
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return self.name
 

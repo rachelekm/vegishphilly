@@ -8,7 +8,8 @@ import {
     RestaurantProperties,
     Point,
     RestaurantFeature,
-    Restaurants
+    Restaurants,
+    PaginatedRestaurants
 } from "./models";
 
 // For "expected" API errors (e.g. failed login, validation errors)
@@ -58,7 +59,8 @@ const restaurantPropertiesDecoder = JsonDecoder.object<RestaurantProperties>(
     {
         name: JsonDecoder.string,
         address: JsonDecoder.string,
-        is_approved: JsonDecoder.boolean
+        is_approved: JsonDecoder.boolean,
+        average_rating: JsonDecoder.nullable(JsonDecoder.number)
     },
     "Properties"
 );
@@ -84,6 +86,16 @@ export const restaurantsDecoder = JsonDecoder.object<Restaurants>(
     {
         type: JsonDecoder.isExactly("FeatureCollection"),
         features: JsonDecoder.array(featureDecoder, "Features"),
+    },
+    "Restaurants"
+);
+
+export const paginatedRestaurantsDecoder = JsonDecoder.object<PaginatedRestaurants>(
+    {
+        count: JsonDecoder.number,
+        next: JsonDecoder.nullable(JsonDecoder.string),
+        previous: JsonDecoder.nullable(JsonDecoder.string),
+        results: restaurantsDecoder,
     },
     "Restaurants"
 );

@@ -7,13 +7,13 @@ import {
     jwtRefreshDecoder,
     loginResponseDecoder,
     userDecoder,
-    restaurantsDecoder,
+    paginatedRestaurantsDecoder,
 } from "./decoders";
 import { clearJWT, getJWT, jwtIsExpired, setJWT } from "./jwt";
 import {
     LoginCredentials,
+    PaginatedRestaurants,
     PathTransition,
-    Restaurants,
     User
 } from "./models";
 
@@ -127,12 +127,12 @@ export async function fetchCurrentUser(): Promise<User> {
     });
 }
 
-export async function fetchRestaurants(bounds: LngLatBounds): Promise<Restaurants> {
+export async function fetchRestaurants(bounds: LngLatBounds, pag_count: number): Promise<PaginatedRestaurants> {
     return new Promise((resolve, reject) => {
         let bounds_string = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`
         api
-            .get(`/api/restaurants/?in_bbox=${bounds_string}`)
-            .then((response) => decodeResponse(restaurantsDecoder, response.data).then(resolve).catch(reject))
+            .get(`/api/restaurants/?in_bbox=${bounds_string}&page=${pag_count}`)
+            .then((response) => decodeResponse(paginatedRestaurantsDecoder, response.data).then(resolve).catch(reject))
             .catch((error) => {
                 return error.response
                     ? decodeResponse(apiErrorDecoder, error.response.data)

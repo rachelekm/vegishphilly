@@ -9,11 +9,11 @@ import {
 } from "../actions/restaurants";
 
 import { fetchRestaurants } from "../api";
-import { Restaurants } from "../models";
+import { PaginatedRestaurants } from "../models";
 import { Resource } from "../resource";
 
 interface RestaurantsResource {
-    readonly restaurants: Restaurants;
+    readonly restaurants: PaginatedRestaurants;
 }
 
 export type RestaurantsState = Resource<RestaurantsResource>;
@@ -35,7 +35,7 @@ const restaurantsReducer: LoopReducer<RestaurantsState, Action> = (
                 Cmd.run(fetchRestaurants, {
                     successActionCreator: restaurantsFetchSuccess,
                     failActionCreator: restaurantsFetchFailure,
-                    args: [action.payload] as Parameters<typeof fetchRestaurants>,
+                    args: action.payload as Parameters<typeof fetchRestaurants>,
                 })
             );
         case getType(restaurantsFetchSuccess):

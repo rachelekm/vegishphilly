@@ -2,24 +2,40 @@
 /** @jsx jsx */
 import { jsx, Flex } from "theme-ui";
 import { State } from "../reducers";
+import store from "../store";
 import { connect } from "react-redux";
+import { useState } from "react";
+import { useEffect } from "react";
 import { RestaurantsState } from "../reducers/restaurants";
+import { restaurantsFetch } from "../actions/restaurants";
+import { mapDataState } from "../reducers/mapdata";
 
 interface SidebarProps {
     readonly restaurants: RestaurantsState
-    //ratings?
+    readonly mapData: mapDataState
 }
 
-function Sidebar({ restaurants }: SidebarProps) {
+function Sidebar({ restaurants, mapData }: SidebarProps) {
     const restaurantData = "resource" in restaurants ? restaurants.resource : null;
-    const allRestaurants = restaurantData?.restaurants;
+    const pag_count = Math.ceil((Number(restaurantData?.restaurants.count) / 5));
+    const [currentPag, setCurentPag] = useState<number>(1);
+    const prev = restaurantData?.restaurants.previous
+    const next = restaurantData?.restaurants.next
+    const allRestaurants = restaurantData?.restaurants.results;
+
+    useEffect(() => {
+        mapData.data.bounds && currentPag && store.dispatch(restaurantsFetch([mapData.data.bounds, currentPag]));
+        // eslint-disable-next-line
+    }, [currentPag])
 
     const renderedRestaurants = allRestaurants && allRestaurants.features.length > 0 ?
         allRestaurants.features.map(feature => {
             return <li className='restaurant-item' key={allRestaurants.features.indexOf(feature)}>
                 <h3 className='item-name'>{feature.properties.name}</h3>
                 <h4 className='item-address'>{feature.properties.address}</h4>
-                <h4 className='item-overall-rating'>Avg Rating: </h4>
+                {feature.properties.average_rating ? <h4 className='item-overall-rating'>Avg Rating: {feature.properties.average_rating} stars</h4>
+                    : <h4 className='item-overall-rating'>There are no ratings</h4>}
+
             </li>
         }) :
         'There are no restaurants in this area.'
@@ -32,6 +48,28 @@ function Sidebar({ restaurants }: SidebarProps) {
             <ul className='sidebar-list'>
                 {renderedRestaurants}
             </ul>
+            {pag_count > 1 && <nav>
+                <ul className='pagination'>
+                    {
+                        prev ?
+                            //change this so doesn't take last char if there is no page number!
+                            prev.includes('page=') ? <li key='prev'><button onClick={(event: React.MouseEvent<HTMLElement>) => setCurentPag(parseInt(prev?.slice(-1)))}>prev</button></li> :
+                                <li key='prev'><button onClick={(event: React.MouseEvent<HTMLElement>) => setCurentPag(1)}>prev</button></li>
+                            :
+                            <li key='prev'><button disabled={true}>prev</button></li>
+                    }
+                    {
+                        [...Array(pag_count),].map((v: undefined, i: number) => {
+                            return <li key={i + 1}><button onClick={(event: React.MouseEvent<HTMLElement>) => setCurentPag(i + 1)}>{i + 1}</button></li>
+                        })
+                    }
+                    {
+                        next ?
+                            <li key='next'><button onClick={(event: React.MouseEvent<HTMLElement>) => setCurentPag(parseInt(next?.slice(-1)))}>next</button></li> :
+                            <li key='next'><button disabled={true}>next</button></li>
+                    }
+                </ul>
+            </nav>}
             <div className='add-res-box'></div>
         </Flex>
     );
@@ -40,7 +78,8 @@ function Sidebar({ restaurants }: SidebarProps) {
 
 function mapStateToProps(state: State): SidebarProps {
     return {
-        restaurants: state.restaurants
+        restaurants: state.restaurants,
+        mapData: state.mapData
     };
 }
 

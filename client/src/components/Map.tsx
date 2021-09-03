@@ -7,20 +7,15 @@ import { State } from "../reducers";
 import { connect } from "react-redux";
 import { RestaurantsState } from "../reducers/restaurants";
 import { restaurantsFetch } from "../actions/restaurants";
+import { mapDataState } from "../reducers/mapdata";
+import { setMapData } from "../actions/mapdata";
+import { mapData } from "../models";
 
-import mapboxgl, { GeoJSONSource, LngLatBounds } from "mapbox-gl";
-
-interface mapData {
-    readonly center: {
-        readonly lng: number;
-        readonly lat: number;
-    };
-    readonly zoom: number;
-    readonly bounds: LngLatBounds | null
-}
+import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 
 interface MapProps {
     readonly restaurants: RestaurantsState
+    readonly mapData: mapDataState
 }
 
 interface RestaurantPropertiesPopup {
@@ -30,24 +25,14 @@ interface RestaurantPropertiesPopup {
 
 const popupsHTML = (desc: RestaurantPropertiesPopup) => `<h3>${desc.name}</h3><h4>${desc.address}</h4>`;
 
-function Map({ restaurants }: MapProps) {
+function Map({ restaurants, mapData }: MapProps) {
     const mapRef = useRef<HTMLDivElement>(null);
-    const [mapData, setMapData] = useState<mapData>({
-        center: {
-            lng: -75.165222,
-            lat: 39.952583,
-        },
-        zoom: 7,
-        bounds: null
-    });
     const [initializedMap, setInitializedMap] = useState<mapboxgl.Map | null>(null);
     const restaurantData = "resource" in restaurants ? restaurants.resource : null;
-    const allRestaurants = restaurantData?.restaurants;
+    const allRestaurants = restaurantData?.restaurants.results;
 
     useEffect(() => {
-        if (initializedMap) {
-            store.dispatch(restaurantsFetch(mapData.bounds));
-        }
+        initializedMap && mapData && store.dispatch(restaurantsFetch([mapData.data.bounds, 1]));
     }, [initializedMap, mapData]);
 
     useEffect(() => {
@@ -90,26 +75,28 @@ function Map({ restaurants }: MapProps) {
         const map = new mapboxgl.Map({
             container: mapRef.current,
             style: "mapbox://styles/mapbox/streets-v11",
-            center: mapData.center,
-            zoom: mapData.zoom,
+            center: mapData.data.center,
+            zoom: mapData.data.zoom,
         });
 
         map.on("load", () => {
             //setMapData to get default bounds - viewer dependent 
-            setMapData({
+            const newDataOnLoad: mapData = {
                 center: map.getCenter(),
                 zoom: map.getZoom(),
                 bounds: map.getBounds()
-            });
+            }
+            store.dispatch(setMapData(newDataOnLoad));
             setInitializedMap(map);
         });
 
         map.on("moveend", () => {
-            setMapData({
+            const newDataOnMove: mapData = {
                 center: map.getCenter(),
                 zoom: map.getZoom(),
                 bounds: map.getBounds()
-            });
+            }
+            store.dispatch(setMapData(newDataOnMove));
         });
 
         map.addControl(
@@ -179,7 +166,8 @@ function Map({ restaurants }: MapProps) {
 
 function mapStateToProps(state: State): MapProps {
     return {
-        restaurants: state.restaurants
+        restaurants: state.restaurants,
+        mapData: state.mapData
     };
 }
 

@@ -1,5 +1,6 @@
 import { History } from "history";
 import { Feature, FeatureCollection, Point as GeojsonPoint } from "geojson";
+import { LngLatBounds, LngLatLike } from "mapbox-gl";
 
 export interface LoginCredentials {
     readonly username?: string;
@@ -41,7 +42,8 @@ export interface User {
 export interface RestaurantProperties {
     readonly name: string;
     readonly address: string;
-    readonly is_approved: boolean
+    readonly is_approved: boolean;
+    readonly average_rating: number | null;
 }
 
 type NoBbox<T> = Omit<T, "bbox" | "id">;
@@ -51,3 +53,16 @@ export type Point = NoBbox<GeojsonPoint>;
 export type RestaurantFeature = NoBbox<Feature<Point, RestaurantProperties>>;
 
 export type Restaurants = NoBbox<FeatureCollection<GeojsonPoint, RestaurantProperties>>;
+
+export interface PaginatedRestaurants {
+    readonly count: number | null;
+    readonly next: string | null;
+    readonly previous: string | null;
+    readonly results: Restaurants
+}
+
+export interface mapData {
+    readonly center: LngLatLike
+    readonly zoom: number;
+    readonly bounds: LngLatBounds | null
+}
