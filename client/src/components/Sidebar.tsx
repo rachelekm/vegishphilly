@@ -52,7 +52,6 @@ function Sidebar({ restaurants, mapData }: SidebarProps) {
                 <ul className='pagination'>
                     {
                         prev ?
-                            //change this so doesn't take last char if there is no page number!
                             prev.includes('page=') ? <li key='prev'><button onClick={(event: React.MouseEvent<HTMLElement>) => setCurentPag(parseInt(prev?.slice(-1)))}>prev</button></li> :
                                 <li key='prev'><button onClick={(event: React.MouseEvent<HTMLElement>) => setCurentPag(1)}>prev</button></li>
                             :
