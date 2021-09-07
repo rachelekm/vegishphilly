@@ -18,14 +18,10 @@ class UserViewSet(mixins.RetrieveModelMixin, GenericViewSet):
 
 
 class RestaurantList(generics.ListAPIView):
-    queryset = Restaurant.objects.all()
+    queryset = (
+        Restaurant.objects.get_queryset().filter(is_approved=True).order_by("name")
+    )
     serializer_class = RestaurantSerializer
     bbox_filter_field = "loc"
     filter_backends = (InBBoxFilter,)
-    bbox_filter_include_overlapping = True  # Optional
-
-
-# todos:
-# pagination get ~5-10 restaurants in bounding box
-# get ratings of current users
-# get restaurant rating average
+    bbox_filter_include_overlapping = True
