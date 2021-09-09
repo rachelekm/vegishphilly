@@ -1,7 +1,5 @@
 from django.contrib.gis.db import models
-from django.db.models.signals import post_save
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 
 class Restaurant(models.Model):
@@ -9,6 +7,7 @@ class Restaurant(models.Model):
     address = models.CharField(max_length=100)
     loc = models.PointField()
     is_approved = models.BooleanField(default=False)
+    owner = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="owner")
 
     def __str__(self):
         return self.name
@@ -29,3 +28,4 @@ class Rating(models.Model):
             + self.user.username
         )
         return rating_string
+
