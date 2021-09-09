@@ -1,11 +1,11 @@
 from collections import OrderedDict
 from django.test import TestCase, Client
+from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point
 from rest_framework_gis.fields import GeoJsonDict
 from api.models import Restaurant, Rating
-from api.serializers import RestaurantSerializer
+from api.serializers import RestaurantSerializer, UserSerializer
 from api.factories import UserFactory, RestaurantFactory
-
 
 class RestaurantSerializerTestCase(TestCase):
     def setUp(self):
@@ -32,6 +32,7 @@ class RestaurantSerializerTestCase(TestCase):
                 ("address", "123 Street St. Place, PA 12345"),
                 ("is_approved", True),
                 ("average_rating", 1.8),
+                #add owner as field value=serialized testUser
             ]
         )
         restaurant_geojson = {
@@ -77,3 +78,43 @@ class RestaurantViewsetTestCase(TestCase):
     def test_restaurant_filter_boundingbox(self):
         response = self.c.get("/api/restaurants/?in_bbox=-2,-2,2,2")
         self.assertEqual(response.data["count"], 2)
+
+class UserSerializerTestCase(TestCase):
+    def setUp(self):
+        self.test_user = UserFactory()
+        self.test_restaurant_1 = RestaurantFactory.create(
+            __sequence=1, owner=(self.test_user,)
+        )
+        self.test_restaurant_2 = RestaurantFactory.create(
+            __sequence=2, owner=(self.test_user,)
+        )
+
+    def test_user_owns_multiple_restaurants(self):
+        user = User.objects.get(username=self.test_user.username)
+        data = UserSerializer(user).data
+        self.assertEqual(2, len(data["is_owner"]))
+
+    def test_user_is_owner(self):
+        user = User.objects.get(username=self.test_user.username)
+        data = UserSerializer(user).data
+        self.assertQuerysetEqual(
+            [self.test_restaurant_1, self.test_restaurant_2], data["is_owner"]
+        )
+
+class RestaurantOwnerSerializerTestCase(TestCase):
+    def setUp(self):
+        self.test_user_1 = UserFactory()
+        self.test_user_2 = UserFactory()
+        RestaurantFactory.create(
+            __sequence=1, owner=(self.test_user_1, self.test_user_2)
+        )
+
+    def test_restaurant__multiple_owners(self):
+        restaurant = Restaurant.objects.get(name="Test Restaurant 1")
+        data = RestaurantSerializer(restaurant).data
+        self.assertEqual(2, len(data["properties"]["owner"]))
+
+    def test_restaurant_owner(self):
+        restaurant = Restaurant.objects.get(name="Test Restaurant 1")
+        data = RestaurantSerializer(restaurant).data
+        self.assertEqual(self.test_user_1.id, data["properties"]["owner"][0]["id"])
