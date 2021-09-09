@@ -8,13 +8,15 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0004_alter_rating_rating'),
+        ("api", "0004_alter_rating_rating"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='restaurant',
-            name='owner',
-            field=models.ManyToManyField(related_name='owner', to=settings.AUTH_USER_MODEL),
+            model_name="restaurant",
+            name="owner",
+            field=models.ManyToManyField(
+                related_name="owner", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

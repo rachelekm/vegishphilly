@@ -28,4 +28,3 @@ class Rating(models.Model):
             + self.user.username
         )
         return rating_string
-
