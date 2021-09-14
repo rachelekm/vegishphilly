@@ -11,6 +11,9 @@ deployment/ansible/roles/azavea.*
 django/static/
 __pycache__/
 
+#venv
+.venv
+
 # JS
 node_modules/
 npm-debug.log
