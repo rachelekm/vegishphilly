@@ -26,10 +26,18 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericVie
     #pulled from CreateModelMixin - custom create to eventually handle restaurant data in request
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        #if restaurant data exists in request
+        if serializer.initial_data.__contains__('restaurantdata'):
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        #no restaurant data exists in request, proceed with CreateModelMixin
+        else:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_success_headers(self, data):
         try:

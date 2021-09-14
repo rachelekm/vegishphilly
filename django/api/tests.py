@@ -105,17 +105,18 @@ class UserViewsetTestCase(TestCase):
     def setUp(self):
         self.c = Client()
         self.userdata_owner = {
-            'username': 'testOwner',
+            'username': 'testOwner1',
             'password': 'testOwner1234',
-            'restaurant': {
-                'name': 'testOwners Pizza Joint',
+            'restaurantdata': {
+                'name': 'testOwner2s Pizza Joint',
                 'address': '1 Pizza Plaza Philadelphia, PA 12345',
                 'loc': Point(0, 0)
             }
         }
         self.userdata_not_owner = {
-            'username': 'testOwner',
-            'password': 'testOwner1234'
+            'username': 'testOwner2',
+            'password': 'testOwner1234',
+            'restaurantdata': {}
         }
     
     def test_user_creation_not_owner(self):
@@ -123,9 +124,19 @@ class UserViewsetTestCase(TestCase):
         #check created status
         self.assertEqual(response.status_code, 201)
         #check user exists
-        owner = User.objects.get(pk=response.data['pk'])
-        print('the owner:', owner)
-        self.assertEqual(owner['username'], self.userdata_not_owner['username'])
+        does_user_exist = User.objects.filter(username=self.userdata_not_owner['username']).exists()
+        self.assertEqual(True, does_user_exist)
+
+    def test_user_creation_is_owner(self):
+        response = self.c.post('/api/user/', self.userdata_owner, format='json')
+        #check created status
+        self.assertEqual(response.status_code, 201)
+        #check user exists
+        does_user_exist = User.objects.filter(username=self.userdata_owner['username']).exists()
+        self.assertEqual(True, does_user_exist)
+        #check restaurant exists
+        does_restaurant_exist = Restaurant.objects.filter(name=self.userdata_owner['restaurantdata']['name']).exists()
+        self.assertEqual(True, does_restaurant_exist)
 
 class RestaurantOwnerSerializerTestCase(TestCase):
     def setUp(self):
