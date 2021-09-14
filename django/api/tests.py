@@ -101,6 +101,32 @@ class UserSerializerTestCase(TestCase):
             [self.test_restaurant_1, self.test_restaurant_2], data["is_owner"]
         )
 
+class UserViewsetTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.userdata_owner = {
+            'username': 'testOwner',
+            'password': 'testOwner1234',
+            'restaurant': {
+                'name': 'testOwners Pizza Joint',
+                'address': '1 Pizza Plaza Philadelphia, PA 12345',
+                'loc': Point(0, 0)
+            }
+        }
+        self.userdata_not_owner = {
+            'username': 'testOwner',
+            'password': 'testOwner1234'
+        }
+    
+    def test_user_creation_not_owner(self):
+        response = self.c.post('/api/user/', self.userdata_not_owner, format='json')
+        #check created status
+        self.assertEqual(response.status_code, 201)
+        #check user exists
+        owner = User.objects.get(pk=response.data['pk'])
+        print('the owner:', owner)
+        self.assertEqual(owner['username'], self.userdata_not_owner['username'])
+
 class RestaurantOwnerSerializerTestCase(TestCase):
     def setUp(self):
         self.test_user_1 = UserFactory()

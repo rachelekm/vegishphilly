@@ -11,9 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "is_owner"]
+        fields = ("id", "username", "is_owner")
         write_only_fields = ("password",)
-        read_only_fields = ["id", "username", "is_owner"]
 
     def get_is_owner(self, instance):
         return Restaurant.objects.filter(owner__username=instance.username)
