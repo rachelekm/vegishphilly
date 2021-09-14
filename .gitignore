@@ -19,6 +19,9 @@ bundle.js.map
 dist/
 yarn-error.log
 
+#venv
+.venv
+
 # macOS
 .DS_Store
 
