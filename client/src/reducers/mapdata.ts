@@ -9,7 +9,7 @@ import {
 import { mapData } from "../models";
 import mapboxgl from "mapbox-gl";
 
-export interface mapDataState {
+export interface MapDataState {
     readonly data: mapData;
 }
 
@@ -18,7 +18,7 @@ const sw = new mapboxgl.LngLat(-73.2371, 41.7289);
 const ne = new mapboxgl.LngLat(-77.0933, 38.1288);
 const deafult_bounds = new mapboxgl.LngLatBounds(sw, ne);
 
-export const initialState: mapDataState = {
+export const initialState: MapDataState = {
     data: {
         center: null,
         zoom: null,
@@ -26,10 +26,10 @@ export const initialState: mapDataState = {
     }
 };
 
-const mapDataReducer: LoopReducer<mapDataState, Action> = (
-    state: mapDataState = initialState,
+const mapDataReducer: LoopReducer<MapDataState, Action> = (
+    state: MapDataState = initialState,
     action: Action
-): mapDataState => {
+): MapDataState => {
     switch (action.type) {
         case getType(setMapData):
             return {

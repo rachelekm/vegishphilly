@@ -8,11 +8,11 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { RestaurantsState } from "../reducers/restaurants";
 import { restaurantsFetch } from "../actions/restaurants";
-import { mapDataState } from "../reducers/mapdata";
+import { MapDataState } from "../reducers/mapdata";
 
 interface SidebarProps {
     readonly restaurants: RestaurantsState
-    readonly mapData: mapDataState
+    readonly mapData: MapDataState
 }
 
 function Sidebar({ restaurants, mapData }: SidebarProps) {
@@ -25,7 +25,7 @@ function Sidebar({ restaurants, mapData }: SidebarProps) {
 
     useEffect(() => {
         mapData.data.bounds && currentPag && store.dispatch(restaurantsFetch([mapData.data.bounds, currentPag]));
-        // eslint-disable-next-line
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPag])
 
     const renderedRestaurants = allRestaurants && allRestaurants.features.length > 0 ?

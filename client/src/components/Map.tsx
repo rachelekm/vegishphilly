@@ -7,7 +7,7 @@ import { State } from "../reducers";
 import { connect } from "react-redux";
 import { RestaurantsState } from "../reducers/restaurants";
 import { restaurantsFetch } from "../actions/restaurants";
-import { mapDataState } from "../reducers/mapdata";
+import { MapDataState } from "../reducers/mapdata";
 import { setMapData } from "../actions/mapdata";
 import { mapData } from "../models";
 
@@ -15,7 +15,7 @@ import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 
 interface MapProps {
     readonly restaurants: RestaurantsState
-    readonly mapData: mapDataState
+    readonly mapData: MapDataState
 }
 
 interface RestaurantPropertiesPopup {
@@ -65,11 +65,9 @@ function Map({ restaurants, mapData }: MapProps) {
     }, [initializedMap, allRestaurants]);
 
     useEffect(() => {
-        // eslint-disable-next-line
         if (mapRef.current === null) {
             return;
         }
-        // eslint-disable-next-line
         mapboxgl.accessToken = 'pk.eyJ1Ijoicm1vcmlubyIsImEiOiJja292Z3A3aXEwNDlmMnZ0bDg1eDBxMHkxIn0.vQGK_iJsdwIWk1_SOGLm3A' || "";
 
         const map = new mapboxgl.Map({
@@ -112,7 +110,7 @@ function Map({ restaurants, mapData }: MapProps) {
 
         return () => map?.remove();
 
-        // eslint-disable-next-line
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mapRef]);
 
     useEffect(() => {
@@ -123,7 +121,6 @@ function Map({ restaurants, mapData }: MapProps) {
             });
 
             const handlePopupEvent = (e: mapboxgl.MapLayerMouseEvent) => {
-                // eslint-disable-next-line
                 if (e.features && e.features[0].geometry.type === "Point" && e.features[0].properties) {
                     const coordsArray: mapboxgl.LngLatLike = {
                         lng: e.features[0].geometry.coordinates[0],
@@ -139,13 +136,11 @@ function Map({ restaurants, mapData }: MapProps) {
             };
 
             initializedMap.on("mouseenter", "restaurants-layer", function (e: mapboxgl.MapLayerMouseEvent) {
-                // eslint-disable-next-line
                 initializedMap.getCanvas().style.cursor = "pointer";
                 handlePopupEvent(e);
             });
 
             initializedMap.on("mouseleave", "restaurants-layer", function () {
-                // eslint-disable-next-line
                 initializedMap.getCanvas().style.cursor = "";
                 hoverPopup.remove();
             });
