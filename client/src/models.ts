@@ -46,7 +46,7 @@ export interface RestaurantProperties {
     readonly average_rating: number | null;
 }
 
-type NoBbox<T> = Omit<T, "bbox" | "id">;
+type NoBbox<T> = Omit<T, "bbox">;
 
 export type Point = NoBbox<GeojsonPoint>;
 

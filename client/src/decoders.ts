@@ -78,6 +78,7 @@ const featureDecoder = JsonDecoder.object<RestaurantFeature>(
         type: JsonDecoder.isExactly("Feature"),
         geometry: restaurantPointDecoder,
         properties: restaurantPropertiesDecoder,
+        id: JsonDecoder.optional(JsonDecoder.number)
     },
     "RestaurantFeature"
 );
