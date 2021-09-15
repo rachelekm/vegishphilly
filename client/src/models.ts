@@ -62,7 +62,7 @@ export interface PaginatedRestaurants {
 }
 
 export interface mapData {
-    readonly center: LngLatLike
-    readonly zoom: number;
-    readonly bounds: LngLatBounds | null
+    readonly center: LngLatLike | null;
+    readonly zoom: number | null;
+    readonly bounds: LngLatBounds;
 }

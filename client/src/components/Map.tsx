@@ -75,12 +75,11 @@ function Map({ restaurants, mapData }: MapProps) {
         const map = new mapboxgl.Map({
             container: mapRef.current,
             style: "mapbox://styles/mapbox/streets-v11",
-            center: mapData.data.center,
-            zoom: mapData.data.zoom,
+            bounds: mapData.data.bounds
         });
 
         map.on("load", () => {
-            //setMapData to get default bounds - viewer dependent 
+            //setMapData to set center and zoom
             const newDataOnLoad: mapData = {
                 center: map.getCenter(),
                 zoom: map.getZoom(),

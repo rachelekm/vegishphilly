@@ -7,15 +7,22 @@ import {
 } from "../actions/mapdata";
 
 import { mapData } from "../models";
+import mapboxgl from "mapbox-gl";
 
 export interface mapDataState {
     readonly data: mapData;
 }
+
+//default bounds for Philadelphia
+const sw = new mapboxgl.LngLat(-73.2371, 41.7289);
+const ne = new mapboxgl.LngLat(-77.0933, 38.1288);
+const deafult_bounds = new mapboxgl.LngLatBounds(sw, ne);
+
 export const initialState: mapDataState = {
     data: {
-        center: { lng: -75.165222, lat: 39.952583 },
-        zoom: 7,
-        bounds: null
+        center: null,
+        zoom: null,
+        bounds: deafult_bounds
     }
 };
 
