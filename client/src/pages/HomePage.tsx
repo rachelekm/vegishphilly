@@ -9,7 +9,7 @@ import Sidebar from "../components/Sidebar";
 function HomePage() {
 
     return (
-        <Flex>
+        <Flex className='flex-container'>
             <Sidebar />
             <Map />
         </Flex>

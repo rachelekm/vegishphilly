@@ -48,7 +48,7 @@ function Sidebar({ restaurants, mapData }: SidebarProps) {
             <ul className='sidebar-list'>
                 {renderedRestaurants}
             </ul>
-            {pag_count > 1 && <nav>
+            {pag_count > 1 && <nav className='pagination-nav'>
                 <ul className='pagination'>
                     {
                         prev ?

@@ -9,7 +9,7 @@ import { RestaurantsState } from "../reducers/restaurants";
 import { restaurantsFetch } from "../actions/restaurants";
 import { MapDataState } from "../reducers/mapdata";
 import { setMapData } from "../actions/mapdata";
-import { mapData } from "../models";
+import { MapData } from "../models";
 
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 
@@ -78,7 +78,7 @@ function Map({ restaurants, mapData }: MapProps) {
 
         map.on("load", () => {
             //setMapData to set center and zoom
-            const newDataOnLoad: mapData = {
+            const newDataOnLoad: MapData = {
                 center: map.getCenter(),
                 zoom: map.getZoom(),
                 bounds: map.getBounds()
@@ -88,7 +88,7 @@ function Map({ restaurants, mapData }: MapProps) {
         });
 
         map.on("moveend", () => {
-            const newDataOnMove: mapData = {
+            const newDataOnMove: MapData = {
                 center: map.getCenter(),
                 zoom: map.getZoom(),
                 bounds: map.getBounds()
@@ -149,10 +149,8 @@ function Map({ restaurants, mapData }: MapProps) {
 
 
     return (
-        <Flex>
-            <div className='map-component'>
-                <div ref={mapRef} className="map-container" />
-            </div>
+        <Flex className='map-component'>
+            <div ref={mapRef} className="map-container" />
         </Flex>
     );
 

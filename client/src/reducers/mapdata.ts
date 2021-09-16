@@ -6,11 +6,11 @@ import {
     setMapData
 } from "../actions/mapdata";
 
-import { mapData } from "../models";
+import { MapData } from "../models";
 import mapboxgl from "mapbox-gl";
 
 export interface MapDataState {
-    readonly data: mapData;
+    readonly data: MapData;
 }
 
 //default bounds for Philadelphia

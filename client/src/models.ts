@@ -61,7 +61,7 @@ export interface PaginatedRestaurants {
     readonly results: Restaurants
 }
 
-export interface mapData {
+export interface MapData {
     readonly center: LngLatLike | null;
     readonly zoom: number | null;
     readonly bounds: LngLatBounds;

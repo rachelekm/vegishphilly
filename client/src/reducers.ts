@@ -2,13 +2,13 @@ import { combineReducers } from "redux-loop";
 import authReducer, { AuthState, initialState as initialAuthState } from "./reducers/auth";
 import userReducer, { initialState as initialUserState, UserState } from "./reducers/user";
 import restaurantsReducer, { initialState as initialRestaurantsState, RestaurantsState } from "./reducers/restaurants";
-import mapDataReducer, { initialState as initialMapDataState, mapDataState } from "./reducers/mapdata"
+import mapDataReducer, { initialState as initialMapDataState, MapDataState } from "./reducers/mapdata"
 
 export interface State {
     readonly auth: AuthState;
     readonly loggedInUser: UserState;
     readonly restaurants: RestaurantsState;
-    readonly mapData: mapDataState
+    readonly mapData: MapDataState
 }
 
 export const initialState: State = {

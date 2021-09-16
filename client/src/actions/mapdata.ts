@@ -1,4 +1,4 @@
 import { createAction } from "typesafe-actions";
-import { mapData } from "../models";
+import { MapData } from "../models";
 
-export const setMapData = createAction("Set map data")<mapData>();
+export const setMapData = createAction("Set map data")<MapData>();
