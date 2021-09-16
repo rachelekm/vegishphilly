@@ -107,16 +107,13 @@ class UserViewsetTestCase(TestCase):
         self.userdata_owner = {
             'username': 'testOwner1',
             'password': 'testOwner1234',
-            'restaurantdata': {
-                'name': 'testOwner2s Pizza Joint',
-                'address': '1 Pizza Plaza Philadelphia, PA 12345',
-                'loc': Point(0, 0)
-            }
+            'restaurant_name': 'testOwner1s Pizza Joint',
+            'restaurant_address': '1 Pizza Plaza Philadelphia, PA 12345',
+            'restaurant_loc': Point(0, 0)
         }
         self.userdata_not_owner = {
             'username': 'testOwner2',
-            'password': 'testOwner1234',
-            'restaurantdata': {}
+            'password': 'testOwner1234'
         }
     
     def test_user_creation_not_owner(self):

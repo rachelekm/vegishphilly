@@ -17,7 +17,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_owner(self, instance):
         return Restaurant.objects.filter(owner__username=instance.username)
 
-
 class RestaurantSerializer(GeoFeatureModelSerializer):
     """A class to serialize restaurants as GeoJSON compatible data"""
 
@@ -28,3 +27,12 @@ class RestaurantSerializer(GeoFeatureModelSerializer):
         model = Restaurant
         geo_field = "loc"
         fields = ("id", "name", "address", "is_approved", "average_rating", "owner")
+
+    def to_internal_value(self, data):
+        print(data['restaurant_loc'])
+        restaurant_data = {
+            'name': data['restaurant_name'],
+            'address': data['restaurant_address'],
+            'loc': data['restaurant_loc']
+        }
+        return super().to_internal_value(restaurant_data)

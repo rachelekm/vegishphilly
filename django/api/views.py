@@ -6,6 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis.filters import InBBoxFilter
 from django.contrib.auth.models import User
 from api.models import Restaurant
+from django.db import transaction
 from api.serializers import UserSerializer, RestaurantSerializer
 from api.permissions import IsAuthenticatedOrCreate
 
@@ -18,26 +19,33 @@ class UserList(generics.ListAPIView):
 class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
     permission_classes = (IsAuthenticatedOrCreate,)
     model_class = User
-    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
-    
-    #pulled from CreateModelMixin - custom create to eventually handle restaurant data in request
+
+    def get_serializer_class(self):
+        if self.switch_serializer == 'restaurant':
+            return RestaurantSerializer
+        return UserSerializer
+
+    #Modified CreateModelMixin
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        #if restaurant data exists in request
-        if serializer.initial_data.__contains__('restaurantdata'):
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        #no restaurant data exists in request, proceed with CreateModelMixin
-        else:
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        self.switch_serializer = 'user'
+        user_serializer = self.get_serializer(data=request.data)
+        if user_serializer.is_valid(raise_exception=True):
+            user_serializer.save()
+            if request.data.__contains__('restaurant_name'):
+                pk = user_serializer.data['id']
+                user = User.objects.get(pk=pk)
+                #add restaurant instance
+                self.switch_serializer = 'restaurant'
+                restaurant_serializer = self.get_serializer(data=request.data)
+                if restaurant_serializer.is_valid(raise_exception=True):
+                    restaurant_serializer.save()
+                    #find restaurant and add user as owner?
+            headers = self.get_success_headers(user_serializer.data)
+            return Response(user_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_success_headers(self, data):
         try:
