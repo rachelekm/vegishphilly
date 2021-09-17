@@ -1,7 +1,6 @@
 from django.contrib.gis.db import models
-from django.db.models.signals import post_save
+from django.db.models import Avg
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 
 class Restaurant(models.Model):
@@ -9,9 +8,14 @@ class Restaurant(models.Model):
     address = models.CharField(max_length=100)
     loc = models.PointField()
     is_approved = models.BooleanField(default=False)
+    user = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Rating")
 
     def __str__(self):
         return self.name
+
+    @property
+    def average_rating(self):
+        return self.rating_set.aggregate(Avg("rating"))["rating__avg"]
 
 
 class Rating(models.Model):

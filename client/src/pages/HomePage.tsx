@@ -1,35 +1,25 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, Flex } from "theme-ui";
-import { useEffect } from "react";
-import store from "../store";
 import { State } from "../reducers";
 import { connect } from "react-redux";
-import { UserState } from "../reducers/user";
-import { userFetch } from "../actions/user";
+import Map from "../components/Map";
+import Sidebar from "../components/Sidebar";
 
-interface HomePageProps {
-    readonly loggedInUser: UserState
-}
-
-function HomePage({ loggedInUser }: HomePageProps) {
-    useEffect(() => {
-        !("resource" in loggedInUser) && store.dispatch(userFetch());
-    }, [loggedInUser]);
+function HomePage() {
 
     return (
-        <Flex>
-            {"resource" in loggedInUser && (<div>
-                <h3>id: {loggedInUser.resource.id}</h3>
-                <h3>username: {loggedInUser.resource.username}</h3>
-            </div>)}
+        <Flex className='flex-container'>
+            <Sidebar />
+            <Map />
         </Flex>
     );
+
 }
 
-function mapStateToProps(state: State): HomePageProps {
+function mapStateToProps(state: State) {
     return {
-        loggedInUser: state.loggedInUser,
+        loggedInUser: state.loggedInUser
     };
 }
 

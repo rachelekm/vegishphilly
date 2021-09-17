@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { LngLatBounds } from "mapbox-gl";
 import { JsonDecoder } from "ts.data.json";
 import {
     apiErrorDecoder,
@@ -6,10 +7,12 @@ import {
     jwtRefreshDecoder,
     loginResponseDecoder,
     userDecoder,
+    paginatedRestaurantsDecoder,
 } from "./decoders";
 import { clearJWT, getJWT, jwtIsExpired, setJWT } from "./jwt";
 import {
     LoginCredentials,
+    PaginatedRestaurants,
     PathTransition,
     User
 } from "./models";
@@ -114,6 +117,22 @@ export async function fetchCurrentUser(): Promise<User> {
         api
             .get(`/api/user/current`)
             .then((response) => decodeResponse(userDecoder, response.data).then(resolve).catch(reject))
+            .catch((error) => {
+                return error.response
+                    ? decodeResponse(apiErrorDecoder, error.response.data)
+                        .then((failure) => reject(failure.detail))
+                        .catch(reject)
+                    : reject(`Unable to fetch logged in user: ${error}`);
+            });
+    });
+}
+
+export async function fetchRestaurants(bounds: LngLatBounds, pag_count: number): Promise<PaginatedRestaurants> {
+    return new Promise((resolve, reject) => {
+        let bounds_string = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`
+        api
+            .get(`/api/restaurants/?in_bbox=${bounds_string}&page=${pag_count}`)
+            .then((response) => decodeResponse(paginatedRestaurantsDecoder, response.data).then(resolve).catch(reject))
             .catch((error) => {
                 return error.response
                     ? decodeResponse(apiErrorDecoder, error.response.data)

@@ -9,23 +9,6 @@ import { AuthState } from "../reducers/auth";
 import { State } from "../reducers";
 import store from "../store";
 
-/*const sx = {
-    page: {
-        bg: "muted",
-        height: "100%",
-        maxHeight: "100%",
-        flexDirection: "column",
-        alignItems: "center",
-        p: 6,
-        overflow: "auto",
-        WebkitOverflowScrolling: "touch",
-    },
-    heading: {
-        mb: 5,
-        flex: "none",
-    },
-} as const;*/
-
 interface SignInProps {
     readonly onSubmit: () => void;
     readonly error?: LoginCredentialsError;

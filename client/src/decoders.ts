@@ -4,7 +4,12 @@ import {
     JWT,
     RefreshedJWT,
     LoginCredentialsError,
-    User
+    User,
+    RestaurantProperties,
+    Point,
+    RestaurantFeature,
+    Restaurants,
+    PaginatedRestaurants
 } from "./models";
 
 // For "expected" API errors (e.g. failed login, validation errors)
@@ -49,3 +54,49 @@ export const userDecoder = JsonDecoder.object<User>(
     },
     "User"
 )
+
+const restaurantPropertiesDecoder = JsonDecoder.object<RestaurantProperties>(
+    {
+        name: JsonDecoder.string,
+        address: JsonDecoder.string,
+        is_approved: JsonDecoder.boolean,
+        average_rating: JsonDecoder.nullable(JsonDecoder.number)
+    },
+    "Properties"
+);
+
+const restaurantPointDecoder = JsonDecoder.object<Point>(
+    {
+        type: JsonDecoder.isExactly("Point"),
+        coordinates: JsonDecoder.tuple([JsonDecoder.number, JsonDecoder.number], "Point"),
+    },
+    "Geometry"
+);
+
+const featureDecoder = JsonDecoder.object<RestaurantFeature>(
+    {
+        type: JsonDecoder.isExactly("Feature"),
+        geometry: restaurantPointDecoder,
+        properties: restaurantPropertiesDecoder,
+        id: JsonDecoder.optional(JsonDecoder.number)
+    },
+    "RestaurantFeature"
+);
+
+export const restaurantsDecoder = JsonDecoder.object<Restaurants>(
+    {
+        type: JsonDecoder.isExactly("FeatureCollection"),
+        features: JsonDecoder.array(featureDecoder, "Features"),
+    },
+    "Restaurants"
+);
+
+export const paginatedRestaurantsDecoder = JsonDecoder.object<PaginatedRestaurants>(
+    {
+        count: JsonDecoder.number,
+        next: JsonDecoder.nullable(JsonDecoder.string),
+        previous: JsonDecoder.nullable(JsonDecoder.string),
+        results: restaurantsDecoder,
+    },
+    "Restaurants"
+);

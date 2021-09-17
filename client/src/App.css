@@ -1,38 +1,58 @@
+html, body, #root {
+  height: 100%;
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.flex-container {
+  height: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.map-component {
+  flex: auto;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
+.map-container {
+  height: 100%;
+  width: 100%;
+}
+
+.sidebar{
+  height: 100%;
+  background-color: white;
   flex-direction: column;
-  align-items: center;
+}
+
+.pagination-nav {
+  margin: auto;
+}
+
+.pagination {
+  padding: 0;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.pagination > li {
+  list-style: none;
+  margin: 0;
+  display: block;
+  float: left;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.pagination > li > button {
+  padding: 10px;
+}
+
+.search-box, .restaurant-item{
+  border: 2px solid grey;
+}
+
+.sidebar-list {
+  overflow-y: scroll;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
