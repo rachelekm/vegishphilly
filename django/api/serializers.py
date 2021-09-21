@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from django.contrib.auth.models import User
 from api.models import Restaurant
+from django.contrib.gis.geos import Point
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,10 +30,11 @@ class RestaurantSerializer(GeoFeatureModelSerializer):
         fields = ("id", "name", "address", "is_approved", "average_rating", "owner")
 
     def to_internal_value(self, data):
-        print(data['restaurant_loc'])
+        lat = int(data['restaurant_loc'].split('.')[0])
+        lng = int(data['restaurant_loc'].split('.')[1])
         restaurant_data = {
             'name': data['restaurant_name'],
             'address': data['restaurant_address'],
-            'loc': data['restaurant_loc']
+            'loc': Point(lat, lng)
         }
         return super().to_internal_value(restaurant_data)

@@ -132,7 +132,8 @@ class UserViewsetTestCase(TestCase):
         does_user_exist = User.objects.filter(username=self.userdata_owner['username']).exists()
         self.assertEqual(True, does_user_exist)
         #check restaurant exists
-        does_restaurant_exist = Restaurant.objects.filter(name=self.userdata_owner['restaurantdata']['name']).exists()
+        print(Restaurant.objects.all())
+        does_restaurant_exist = Restaurant.objects.filter(loc=self.userdata_owner['restaurant_loc']).exists()
         self.assertEqual(True, does_restaurant_exist)
 
 class RestaurantOwnerSerializerTestCase(TestCase):
