@@ -6,6 +6,7 @@ from rest_framework_gis.fields import GeoJsonDict
 from api.models import Restaurant, Rating
 from api.serializers import RestaurantSerializer, UserSerializer
 from api.factories import UserFactory, RestaurantFactory
+import json
 
 class RestaurantSerializerTestCase(TestCase):
     def setUp(self):
@@ -91,50 +92,84 @@ class UserSerializerTestCase(TestCase):
 
     def test_user_owns_multiple_restaurants(self):
         user = User.objects.get(username=self.test_user.username)
-        data = UserSerializer(user).data
-        self.assertEqual(2, len(data["is_owner"]))
+        restaurants = Restaurant.objects.filter(owner=user)
+        self.assertEqual(2, len(restaurants))
 
     def test_user_is_owner(self):
         user = User.objects.get(username=self.test_user.username)
-        data = UserSerializer(user).data
-        self.assertQuerysetEqual(
-            [self.test_restaurant_1, self.test_restaurant_2], data["is_owner"]
-        )
+        user_data = UserSerializer(user).data
+        restaurants = Restaurant.objects.filter(owner=user)
+        is_owner = True
+        for restaurant in restaurants:
+            owner = dict(
+                RestaurantSerializer(restaurant).data["properties"].pop("owner")[0]
+            )
+            if owner != user_data:
+                is_owner = False
+        self.assertEqual(True, is_owner)
+
 
 class UserViewsetTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.userdata_owner = {
-            'username': 'testOwner1',
-            'password': 'testOwner1234',
-            'restaurant_name': 'testOwner1s Pizza Joint',
-            'restaurant_address': '1 Pizza Plaza Philadelphia, PA 12345',
-            'restaurant_loc': Point(0, 0)
+        self.userdata_owner_1 = {
+            "user": {"username": "testOwner1", "password": "testOwner1234"},
+            "restaurant_name": "testOwner1s Pizza Joint",
+            "restaurant_address": "1 Pizza Plaza Philadelphia, PA 12345",
+            "restaurant_loc": {"type": "Point", "coordinates": [125.6, 10.1]},
+        }
+        self.userdata_owner_2 = {
+            "user": {"username": "testOwner2", "password": "testOwner1234"},
+            "restaurant_name": "testOwner2s Pizza Joint",
+            "restaurant_address": "2 Pizza Plaza Philadelphia, PA 12345",
+            "restaurant_loc": {"type": "Point", "coordinates": [125.6, 10.1]},
         }
         self.userdata_not_owner = {
-            'username': 'testOwner2',
-            'password': 'testOwner1234'
+            "user": {"username": "testNotAnOwner1", "password": "testOwner1234"}
         }
-    
+
     def test_user_creation_not_owner(self):
-        response = self.c.post('/api/user/', self.userdata_not_owner, format='json')
-        #check created status
+        response = self.c.post(
+            "/api/user/", self.userdata_not_owner, content_type="application/json"
+        )
+        # check created status
         self.assertEqual(response.status_code, 201)
-        #check user exists
-        does_user_exist = User.objects.filter(username=self.userdata_not_owner['username']).exists()
+        # check user exists
+        does_user_exist = User.objects.filter(
+            username=self.userdata_not_owner["user"]["username"]
+        ).exists()
         self.assertEqual(True, does_user_exist)
 
     def test_user_creation_is_owner(self):
-        response = self.c.post('/api/user/', self.userdata_owner, format='json')
-        #check created status
+        response = self.c.post(
+            "/api/user/", self.userdata_owner_1, content_type="application/json"
+        )
+        # check created status
         self.assertEqual(response.status_code, 201)
-        #check user exists
-        does_user_exist = User.objects.filter(username=self.userdata_owner['username']).exists()
+        # check user exists
+        does_user_exist = User.objects.filter(
+            username=self.userdata_owner_1["user"]["username"]
+        ).exists()
         self.assertEqual(True, does_user_exist)
-        #check restaurant exists
-        print(Restaurant.objects.all())
-        does_restaurant_exist = Restaurant.objects.filter(loc=self.userdata_owner['restaurant_loc']).exists()
+        # check restaurant exists
+        does_restaurant_exist = Restaurant.objects.filter(
+            name=self.userdata_owner_1["restaurant_name"]
+        ).exists()
         self.assertEqual(True, does_restaurant_exist)
+
+    def test_restaurant_owner_field_set(self):
+        self.c.post(
+            "/api/user/", self.userdata_owner_2, content_type="application/json"
+        )
+        restaurant = Restaurant.objects.get(
+            name=self.userdata_owner_2["restaurant_name"]
+        )
+        restaurant_owner = dict(
+            RestaurantSerializer(restaurant).data["properties"].pop("owner")[0]
+        )
+        user = User.objects.get(username=self.userdata_owner_2["user"]["username"])
+        owner = UserSerializer(user).data
+        self.assertEqual(owner, restaurant_owner)
 
 class RestaurantOwnerSerializerTestCase(TestCase):
     def setUp(self):

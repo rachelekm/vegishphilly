@@ -24,32 +24,25 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericVie
         return self.request.user
 
     def get_serializer_class(self):
-        if self.switch_serializer == 'restaurant':
+        if self.request.data.__contains__("restaurant_name"):
             return RestaurantSerializer
         return UserSerializer
 
-    #Modified CreateModelMixin
-    @transaction.atomic
+    # modified mixins.CreateModelMixin for consistent response data
     def create(self, request, *args, **kwargs):
-        self.switch_serializer = 'user'
-        user_serializer = self.get_serializer(data=request.data)
-        if user_serializer.is_valid(raise_exception=True):
-            user_serializer.save()
-            if request.data.__contains__('restaurant_name'):
-                pk = user_serializer.data['id']
-                user = User.objects.get(pk=pk)
-                #add restaurant instance
-                self.switch_serializer = 'restaurant'
-                restaurant_serializer = self.get_serializer(data=request.data)
-                if restaurant_serializer.is_valid(raise_exception=True):
-                    restaurant_serializer.save()
-                    #find restaurant and add user as owner?
-            headers = self.get_success_headers(user_serializer.data)
-            return Response(user_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        response_data = serializer.data
+        if serializer.data.__contains__("properties"):
+            user_details = serializer.data["properties"].pop("owner")
+            response_data = user_details
+        headers = self.get_success_headers(response_data)
+        return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_success_headers(self, data):
         try:
-            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
+            return {"Location": str(data[api_settings.URL_FIELD_NAME])}
         except (TypeError, KeyError):
             return {}
 

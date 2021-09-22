@@ -1,4 +1,4 @@
-#Below taken from Temparate users/permissions
+# Below taken from Temparate users/permissions
 """Permission classes and helpers for limiting access to resources/actions"""
 
 from rest_framework import permissions
@@ -7,7 +7,7 @@ from rest_framework import permissions
 class IsAuthenticatedOrCreate(permissions.BasePermission):
     """Allow anonymous user creation for registration; other user requests must be authenticated."""
 
-    ALLOWED_ANONYMOUS_ACTIONS = ('create')
+    ALLOWED_ANONYMOUS_ACTIONS = "create"
 
     def has_permission(self, request, view):
         """Allow access to anonymous create or authenticated other actions"""
