@@ -6,9 +6,9 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis.filters import InBBoxFilter
 from django.contrib.auth.models import User
 from api.models import Restaurant
-from django.db import transaction
 from api.serializers import UserSerializer, RestaurantSerializer
 from api.permissions import IsAuthenticatedOrCreate
+
 
 class UserList(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
@@ -55,5 +55,3 @@ class RestaurantList(generics.ListAPIView):
     bbox_filter_field = "loc"
     filter_backends = (InBBoxFilter,)
     bbox_filter_include_overlapping = True
-
-

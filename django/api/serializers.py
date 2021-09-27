@@ -15,11 +15,9 @@ class UserSerializer(serializers.ModelSerializer):
         write_only_fields = ("password",)
 
     def to_internal_value(self, data):
+        """Format request data into correct serializer fields"""
         if data.__contains__("user"):
-            user_data = {
-                "username": data["user"]["username"],
-                "password": data["user"]["password"],
-            }
+            user_data = data.pop("user")
             return super().to_internal_value(user_data)
         else:
             return super().to_internal_value(data)
@@ -28,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RestaurantSerializer(GeoFeatureModelSerializer):
     """A class to serialize restaurants as GeoJSON compatible data"""
 
-    average_rating = serializers.FloatField()
+    average_rating = serializers.FloatField(required=False, allow_null=True)
     owner = UserSerializer(many=True)
 
     class Meta:
@@ -37,6 +35,7 @@ class RestaurantSerializer(GeoFeatureModelSerializer):
         fields = ("id", "name", "address", "is_approved", "average_rating", "owner")
 
     def to_internal_value(self, data):
+        """Format request data into correct serializer fields"""
         user_data = data.pop("user")
         lat = int(data["restaurant_loc"]["coordinates"][0])
         lng = int(data["restaurant_loc"]["coordinates"][1])

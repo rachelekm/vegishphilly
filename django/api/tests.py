@@ -6,7 +6,7 @@ from rest_framework_gis.fields import GeoJsonDict
 from api.models import Restaurant, Rating
 from api.serializers import RestaurantSerializer, UserSerializer
 from api.factories import UserFactory, RestaurantFactory
-import json
+
 
 class RestaurantSerializerTestCase(TestCase):
     def setUp(self):
@@ -33,7 +33,7 @@ class RestaurantSerializerTestCase(TestCase):
                 ("address", "123 Street St. Place, PA 12345"),
                 ("is_approved", True),
                 ("average_rating", 1.8),
-                #add owner as field value=serialized testUser
+                ("owner", []),
             ]
         )
         restaurant_geojson = {
@@ -79,6 +79,7 @@ class RestaurantViewsetTestCase(TestCase):
     def test_restaurant_filter_boundingbox(self):
         response = self.c.get("/api/restaurants/?in_bbox=-2,-2,2,2")
         self.assertEqual(response.data["count"], 2)
+
 
 class UserSerializerTestCase(TestCase):
     def setUp(self):
@@ -170,6 +171,7 @@ class UserViewsetTestCase(TestCase):
         user = User.objects.get(username=self.userdata_owner_2["user"]["username"])
         owner = UserSerializer(user).data
         self.assertEqual(owner, restaurant_owner)
+
 
 class RestaurantOwnerSerializerTestCase(TestCase):
     def setUp(self):

@@ -5,6 +5,9 @@ deployment/ansible/roles/azavea.*
 
 # Vagrant
 .vagrant
+
+#vscode
+.vscode
 .venv
 
 # Django
