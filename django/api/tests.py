@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point
 from rest_framework_gis.fields import GeoJsonDict
 from api.models import Restaurant, Rating
-from api.serializers import RestaurantSerializer, UserSerializer
+from api.serializers import RestaurantReadSerializer, UserSerializer
 from api.factories import UserFactory, RestaurantFactory
 
 
@@ -25,7 +25,7 @@ class RestaurantSerializerTestCase(TestCase):
 
     def test_restaurant_geojson_object(self):
         restaurant = Restaurant.objects.get(name="Test Restaurant 1")
-        data = RestaurantSerializer(restaurant).data
+        data = RestaurantReadSerializer(restaurant).data
         id = data["id"]
         restaurant_properies = OrderedDict(
             [
@@ -46,7 +46,7 @@ class RestaurantSerializerTestCase(TestCase):
 
     def test_restaurant_average_rating(self):
         restaurant = Restaurant.objects.get(name="Test Restaurant 1")
-        data = RestaurantSerializer(restaurant).data
+        data = RestaurantReadSerializer(restaurant).data
         self.assertAlmostEqual(
             self.test_restaurant_average_rating, data["properties"]["average_rating"]
         )
@@ -73,7 +73,7 @@ class RestaurantViewsetTestCase(TestCase):
     def test_restaurants_default_order_by_name(self):
         response = self.c.get("/api/restaurants/")
         restaurants = Restaurant.objects.all().filter(is_approved=True).order_by("name")
-        restaurant_data = RestaurantSerializer(restaurants, many=True).data
+        restaurant_data = RestaurantReadSerializer(restaurants, many=True).data
         self.assertEqual(response.data["results"], restaurant_data)
 
     def test_restaurant_filter_boundingbox(self):
@@ -103,7 +103,7 @@ class UserSerializerTestCase(TestCase):
         is_owner = True
         for restaurant in restaurants:
             owner = dict(
-                RestaurantSerializer(restaurant).data["properties"].pop("owner")[0]
+                RestaurantReadSerializer(restaurant).data["properties"].pop("owner")[0]
             )
             if owner != user_data:
                 is_owner = False
@@ -114,19 +114,24 @@ class UserViewsetTestCase(TestCase):
     def setUp(self):
         self.c = Client()
         self.userdata_owner_1 = {
-            "user": {"username": "testOwner1", "password": "testOwner1234"},
-            "restaurant_name": "testOwner1s Pizza Joint",
-            "restaurant_address": "1 Pizza Plaza Philadelphia, PA 12345",
-            "restaurant_loc": {"type": "Point", "coordinates": [125.6, 10.1]},
+            "owner": {"username": "testOwner1", "password": "testOwner1234"},
+            "restaurant": {
+                "name": "testOwner1s Pizza Joint",
+                "address": "1 Pizza Plaza Philadelphia, PA 12345",
+                "loc": {"type": "Point", "coordinates": [125.6, 10.1]}
+            }
         }
         self.userdata_owner_2 = {
-            "user": {"username": "testOwner2", "password": "testOwner1234"},
-            "restaurant_name": "testOwner2s Pizza Joint",
-            "restaurant_address": "2 Pizza Plaza Philadelphia, PA 12345",
-            "restaurant_loc": {"type": "Point", "coordinates": [125.6, 10.1]},
+            "owner": {"username": "testOwner2", "password": "testOwner1234"},
+            "restaurant": {
+                "name": "testOwner2s Pizza Joint",
+                "address": "2 Pizza Plaza Philadelphia, PA 12345",
+                "loc": {"type": "Point", "coordinates": [125.6, 10.1]}
+            }
         }
         self.userdata_not_owner = {
-            "user": {"username": "testNotAnOwner1", "password": "testOwner1234"}
+            "username": "testNotAnOwner1", 
+            "password": "testOwner1234"
         }
 
     def test_user_creation_not_owner(self):
@@ -137,7 +142,7 @@ class UserViewsetTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         # check user exists
         does_user_exist = User.objects.filter(
-            username=self.userdata_not_owner["user"]["username"]
+            username=self.userdata_not_owner["username"]
         ).exists()
         self.assertEqual(True, does_user_exist)
 
@@ -146,15 +151,15 @@ class UserViewsetTestCase(TestCase):
             "/api/user/", self.userdata_owner_1, content_type="application/json"
         )
         # check created status
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, response.data)
         # check user exists
         does_user_exist = User.objects.filter(
-            username=self.userdata_owner_1["user"]["username"]
+            username=self.userdata_owner_1["owner"]["username"]
         ).exists()
         self.assertEqual(True, does_user_exist)
         # check restaurant exists
         does_restaurant_exist = Restaurant.objects.filter(
-            name=self.userdata_owner_1["restaurant_name"]
+            name=self.userdata_owner_1["restaurant"]["name"]
         ).exists()
         self.assertEqual(True, does_restaurant_exist)
 
@@ -163,12 +168,12 @@ class UserViewsetTestCase(TestCase):
             "/api/user/", self.userdata_owner_2, content_type="application/json"
         )
         restaurant = Restaurant.objects.get(
-            name=self.userdata_owner_2["restaurant_name"]
+            name=self.userdata_owner_2["restaurant"]["name"]
         )
         restaurant_owner = dict(
-            RestaurantSerializer(restaurant).data["properties"].pop("owner")[0]
+            RestaurantReadSerializer(restaurant).data["properties"].pop("owner")[0]
         )
-        user = User.objects.get(username=self.userdata_owner_2["user"]["username"])
+        user = User.objects.get(username=self.userdata_owner_2["owner"]["username"])
         owner = UserSerializer(user).data
         self.assertEqual(owner, restaurant_owner)
 
@@ -183,10 +188,10 @@ class RestaurantOwnerSerializerTestCase(TestCase):
 
     def test_restaurant__multiple_owners(self):
         restaurant = Restaurant.objects.get(name="Test Restaurant 1")
-        data = RestaurantSerializer(restaurant).data
+        data = RestaurantReadSerializer(restaurant).data
         self.assertEqual(2, len(data["properties"]["owner"]))
 
     def test_restaurant_owner(self):
         restaurant = Restaurant.objects.get(name="Test Restaurant 1")
-        data = RestaurantSerializer(restaurant).data
+        data = RestaurantReadSerializer(restaurant).data
         self.assertEqual(self.test_user_1.id, data["properties"]["owner"][0]["id"])

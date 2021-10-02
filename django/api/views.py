@@ -6,7 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis.filters import InBBoxFilter
 from django.contrib.auth.models import User
 from api.models import Restaurant
-from api.serializers import UserSerializer, RestaurantSerializer
+from api.serializers import UserSerializer, RestaurantReadSerializer, CreateUserWithRestaurantSerializer
 from api.permissions import IsAuthenticatedOrCreate
 
 
@@ -24,10 +24,10 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericVie
         return self.request.user
 
     def get_serializer_class(self):
-        if self.request.data.__contains__("restaurant_name"):
-            return RestaurantSerializer
+        if self.request.data.__contains__("restaurant"):
+            return CreateUserWithRestaurantSerializer
         return UserSerializer
-
+    
     # modified mixins.CreateModelMixin for consistent response data
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -46,12 +46,11 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericVie
         except (TypeError, KeyError):
             return {}
 
-
 class RestaurantList(generics.ListAPIView):
     queryset = (
         Restaurant.objects.get_queryset().filter(is_approved=True).order_by("name")
     )
-    serializer_class = RestaurantSerializer
+    serializer_class = RestaurantReadSerializer
     bbox_filter_field = "loc"
     filter_backends = (InBBoxFilter,)
     bbox_filter_include_overlapping = True

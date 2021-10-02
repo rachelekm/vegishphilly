@@ -2,9 +2,7 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from django.contrib.auth.models import User
 from api.models import Restaurant
-from django.contrib.gis.geos import Point
 from django.db import transaction
-
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for users"""
@@ -14,17 +12,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username")
         write_only_fields = ("password",)
 
-    def to_internal_value(self, data):
-        """Format request data into correct serializer fields"""
-        if data.__contains__("user"):
-            user_data = data.pop("user")
-            return super().to_internal_value(user_data)
-        else:
-            return super().to_internal_value(data)
-
-
-class RestaurantSerializer(GeoFeatureModelSerializer):
-    """A class to serialize restaurants as GeoJSON compatible data"""
+class RestaurantReadSerializer(GeoFeatureModelSerializer):
+    """A class to serialize restaurants as GeoJSON compatible data 
+        with average rating and owner fields"""
 
     average_rating = serializers.FloatField(required=False, allow_null=True)
     owner = UserSerializer(many=True)
@@ -34,26 +24,31 @@ class RestaurantSerializer(GeoFeatureModelSerializer):
         geo_field = "loc"
         fields = ("id", "name", "address", "is_approved", "average_rating", "owner")
 
-    def to_internal_value(self, data):
-        """Format request data into correct serializer fields"""
-        user_data = data.pop("user")
-        lat = int(data["restaurant_loc"]["coordinates"][0])
-        lng = int(data["restaurant_loc"]["coordinates"][1])
-        restaurant_data = {
-            "name": data["restaurant_name"],
-            "address": data["restaurant_address"],
-            "loc": Point(lat, lng),
-            "owner": [user_data],
-        }
-        return super().to_internal_value(restaurant_data)
+class RestaurantWriteSerializer(GeoFeatureModelSerializer):
+    """A class to serialize and write restaurants as GeoJSON compatible data"""
+
+    class Meta:
+        model = Restaurant
+        geo_field = "loc"
+        fields = ("id", "name", "address", "is_approved")
+
+class CreateUserWithRestaurantSerializer(serializers.Serializer):
+    """Serializer for users and restaurant with user as owner"""
+    owner = UserSerializer()
+    restaurant = RestaurantWriteSerializer()
+
+    def to_representation(self, instance):
+        fields = self.get_fields()
+        owner = fields["owner"].to_representation(instance.owner.first())
+        restaurant = fields["restaurant"].to_representation(instance)
+        return dict(owner=owner, restaurant=restaurant)
 
     @transaction.atomic
     def create(self, validated_data):
-        owners = validated_data.pop("owner")
-        restaurant = Restaurant.objects.create(**validated_data)
-        for owner in owners:
-            new_user, created = User.objects.get_or_create(username=owner["username"])
-            restaurant.owner.add(new_user)
+        fields = self.get_fields()
+        owner = fields["owner"].create(validated_data["owner"])
+        restaurant = fields["restaurant"].create(validated_data["restaurant"])
+        restaurant.owner.add(owner)
         return restaurant
 
     def update(self, instance, validated_data):
