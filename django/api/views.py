@@ -7,17 +7,14 @@ from rest_framework_gis.filters import InBBoxFilter
 from django.contrib.auth.models import User
 from api.models import Restaurant
 from api.serializers import UserSerializer, RestaurantReadSerializer, CreateUserWithRestaurantSerializer
-from api.permissions import IsAuthenticatedOrCreate
-
 
 class UserList(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-
-class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
-    permission_classes = (IsAuthenticatedOrCreate,)
+#Create User and User as Restaurant owner with no permissions
+class CreateUserView(generics.CreateAPIView):
     model_class = User
 
     def get_object(self):
@@ -27,6 +24,14 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         if self.request.data.__contains__("restaurant"):
             return CreateUserWithRestaurantSerializer
         return UserSerializer
+
+#Interact with User with permissions
+class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    model_class = User
+
+    def get_object(self):
+        return self.request.user
 
 class RestaurantList(generics.ListAPIView):
     queryset = (

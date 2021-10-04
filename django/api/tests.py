@@ -120,7 +120,7 @@ class UserViewsetTestCase(TestCase):
             "password": "testOwner1234"
         }
         response = self.client.post(
-            "/api/user/", userdata_not_owner, content_type="application/json"
+            "/api/register/", userdata_not_owner, content_type="application/json"
         )
         # check created status
         self.assertEqual(response.status_code, 201, response.data)
@@ -139,7 +139,7 @@ class UserViewsetTestCase(TestCase):
             }
         }
         response = self.client.post(
-            "/api/user/", userdata_owner, content_type="application/json"
+            "/api/register/", userdata_owner, content_type="application/json"
         )
         # check created status
         self.assertEqual(response.status_code, 201, response.data)
@@ -162,7 +162,7 @@ class UserViewsetTestCase(TestCase):
             }
         }
         response = self.client.post(
-            "/api/user/", userdata_owner, content_type="application/json"
+            "/api/register/", userdata_owner, content_type="application/json"
         )
         restaurant = Restaurant.objects.get(
             name=userdata_owner["restaurant"]["name"]
