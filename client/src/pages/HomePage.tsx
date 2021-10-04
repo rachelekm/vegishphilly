@@ -7,20 +7,18 @@ import Map from "../components/Map";
 import Sidebar from "../components/Sidebar";
 
 function HomePage() {
-
-    return (
-        <Flex className='flex-container'>
-            <Sidebar />
-            <Map />
-        </Flex>
-    );
-
+  return (
+    <Flex className="flex-container">
+      <Sidebar />
+      <Map />
+    </Flex>
+  );
 }
 
 function mapStateToProps(state: State) {
-    return {
-        loggedInUser: state.loggedInUser
-    };
+  return {
+    loggedInUser: state.loggedInUser,
+  };
 }
 
 export default connect(mapStateToProps)(HomePage);

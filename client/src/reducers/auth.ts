@@ -11,7 +11,7 @@ import { LoginCredentials } from "../models";
 export type AuthState = WriteResource<LoginCredentials, void>;
 
 export const initialState: AuthState = {
-    data: { username: "", password: "" },
+  data: { username: "", password: "" },
 };
 
 // In Redux, your reducer listens for actions which may optionally have a
@@ -22,50 +22,50 @@ export const initialState: AuthState = {
 // effect (very often a `Cmd.run`).
 
 const authReducer: LoopReducer<AuthState, Action> = (
-    state: AuthState = initialState,
-    action: Action
+  state: AuthState = initialState,
+  action: Action
 ): AuthState | Loop<AuthState> => {
-    switch (action.type) {
-        case getType(setCredentials):
-            return {
-                data: action.payload,
-            };
-        case getType(loginAttempt): {
-            return loop(
-                {
-                    data: state.data,
-                    isPending: true,
-                },
-                Cmd.run(submitLogin, {
-                    successActionCreator: loginSuccess,
-                    failActionCreator: loginFailure,
-                    args: [state.data, action.payload.successNav] as Parameters<typeof submitLogin>,
-                })
-            );
-        }
-        case getType(loginSuccess):
-            return {
-                data: state.data,
-                resource: void 0,
-            };
-        case getType(loginFailure):
-            return {
-                data: state.data,
-                errorMessage: action.payload,
-            };
-        case getType(logout):
-            return loop(
-                {
-                    data: { username: "", password: "" },
-                },
-                Cmd.run(() => {
-                    action.payload.history.push(action.payload.nextPath);
-                    logoutApi();
-                })
-            );
-        default:
-            return state;
+  switch (action.type) {
+    case getType(setCredentials):
+      return {
+        data: action.payload,
+      };
+    case getType(loginAttempt): {
+      return loop(
+        {
+          data: state.data,
+          isPending: true,
+        },
+        Cmd.run(submitLogin, {
+          successActionCreator: loginSuccess,
+          failActionCreator: loginFailure,
+          args: [state.data, action.payload.successNav] as Parameters<typeof submitLogin>,
+        })
+      );
     }
+    case getType(loginSuccess):
+      return {
+        data: state.data,
+        resource: void 0,
+      };
+    case getType(loginFailure):
+      return {
+        data: state.data,
+        errorMessage: action.payload,
+      };
+    case getType(logout):
+      return loop(
+        {
+          data: { username: "", password: "" },
+        },
+        Cmd.run(() => {
+          action.payload.history.push(action.payload.nextPath);
+          logoutApi();
+        })
+      );
+    default:
+      return state;
+  }
 };
 
 export default authReducer;

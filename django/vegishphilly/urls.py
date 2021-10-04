@@ -37,5 +37,9 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include(router.urls)),
     path("api/register/", api_views.CreateUserView.as_view(), name="register"),
-    path("api/restaurants/", api_views.RestaurantList.as_view(), name="restaurants"),
+    path(
+        "api/restaurants/",
+        api_views.RestaurantList.as_view(),
+        name="restaurants",
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

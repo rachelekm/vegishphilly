@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from api.models import Restaurant
 from django.db import transaction
 
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for users"""
 
@@ -12,9 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username")
         write_only_fields = ("password",)
 
+
 class RestaurantReadSerializer(GeoFeatureModelSerializer):
-    """A class to serialize restaurants as GeoJSON compatible data 
-        with average rating and owner fields"""
+    """A class to serialize restaurants as GeoJSON compatible data
+    with average rating and owner fields"""
 
     average_rating = serializers.FloatField(required=False, allow_null=True)
     owner = UserSerializer(many=True)
@@ -22,7 +24,15 @@ class RestaurantReadSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Restaurant
         geo_field = "loc"
-        fields = ("id", "name", "address", "is_approved", "average_rating", "owner")
+        fields = (
+            "id",
+            "name",
+            "address",
+            "is_approved",
+            "average_rating",
+            "owner",
+        )
+
 
 class RestaurantWriteSerializer(GeoFeatureModelSerializer):
     """A class to serialize and write restaurants as GeoJSON compatible data"""
@@ -32,8 +42,10 @@ class RestaurantWriteSerializer(GeoFeatureModelSerializer):
         geo_field = "loc"
         fields = ("id", "name", "address", "is_approved")
 
+
 class CreateUserWithRestaurantSerializer(serializers.Serializer):
     """Serializer for users and restaurant with user as owner"""
+
     owner = UserSerializer()
     restaurant = RestaurantWriteSerializer()
 
