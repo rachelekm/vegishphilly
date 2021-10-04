@@ -26,10 +26,6 @@ class RestaurantFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def owner(self, create, extracted, **kwargs):
-        if not create or not extracted:
-            # Simple build, or nothing to add, do nothing.
-            return
-
         if extracted:
             # A list of owners were passed in, use them
             for owner in extracted:
