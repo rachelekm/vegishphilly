@@ -16,7 +16,7 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
 
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
+class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
     permission_classes = (IsAuthenticatedOrCreate,)
     model_class = User
 
@@ -27,24 +27,6 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericVie
         if self.request.data.__contains__("restaurant"):
             return CreateUserWithRestaurantSerializer
         return UserSerializer
-    
-    # modified mixins.CreateModelMixin for consistent response data
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        response_data = serializer.data
-        if serializer.data.__contains__("properties"):
-            user_details = serializer.data["properties"].pop("owner")
-            response_data = user_details
-        headers = self.get_success_headers(response_data)
-        return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
-
-    def get_success_headers(self, data):
-        try:
-            return {"Location": str(data[api_settings.URL_FIELD_NAME])}
-        except (TypeError, KeyError):
-            return {}
 
 class RestaurantList(generics.ListAPIView):
     queryset = (
