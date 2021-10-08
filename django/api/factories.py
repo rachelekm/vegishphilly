@@ -8,10 +8,10 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    first_name = ("Testing",)
-    last_name = ("Person",)
+    first_name = "Testing"
+    last_name = "Person"
     username = factory.Sequence(lambda n: "testperson{}".format(n))
-    password = ("testtest1234",)
+    password = "testtest1234"
 
 
 class RestaurantFactory(factory.django.DjangoModelFactory):
@@ -23,3 +23,10 @@ class RestaurantFactory(factory.django.DjangoModelFactory):
     address = "123 Street St. Place, PA 12345"
     loc = Point(0, 0)
     is_approved = True
+
+    @factory.post_generation
+    def owner(self, create, extracted, **kwargs):
+        if extracted:
+            # A list of owners were passed in, use them
+            for owner in extracted:
+                self.owner.add(owner)

@@ -8,7 +8,7 @@ class Restaurant(models.Model):
     address = models.CharField(max_length=100)
     loc = models.PointField()
     is_approved = models.BooleanField(default=False)
-    user = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Rating")
+    owner = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="owner")
 
     def __str__(self):
         return self.name

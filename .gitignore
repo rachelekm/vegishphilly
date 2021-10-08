@@ -5,11 +5,17 @@ deployment/ansible/roles/azavea.*
 
 # Vagrant
 .vagrant
+
+#vscode
+.vscode
 .venv
 
 # Django
 django/static/
 __pycache__/
+
+#venv
+.venv
 
 # JS
 node_modules/
