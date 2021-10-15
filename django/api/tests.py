@@ -48,7 +48,8 @@ class RestaurantSerializerTestCase(TestCase):
         restaurant = Restaurant.objects.get(name="Test Restaurant 1")
         data = RestaurantReadSerializer(restaurant).data
         self.assertAlmostEqual(
-            self.test_restaurant_average_rating, data["properties"]["average_rating"]
+            self.test_restaurant_average_rating,
+            data["properties"]["average_rating"],
         )
 
 
@@ -72,8 +73,9 @@ class RestaurantViewsetTestCase(TestCase):
 
     def test_restaurants_default_order_by_name(self):
         response = self.client.get("/api/restaurants/")
-        restaurants = Restaurant.objects.all().filter(is_approved=True).order_by("name")
-        restaurant_data = RestaurantReadSerializer(restaurants, many=True).data
+        restaurants = Restaurant.objects.all().filter(is_approved=True)
+        restaurants_ordered = restaurants.order_by("name")
+        restaurant_data = RestaurantReadSerializer(restaurants_ordered, many=True).data
         self.assertEqual(response.data["results"], restaurant_data)
 
     def test_restaurant_filter_boundingbox(self):
@@ -116,18 +118,20 @@ class UserViewsetTestCase(TestCase):
 
     def test_user_creation_not_owner(self):
         userdata_not_owner = {
-            "username": "testNotAnOwner1", 
-            "password": "testOwner1234"
+            "username": "testNotAnOwner1",
+            "password": "testOwner1234",
         }
         response = self.client.post(
-            "/api/register/", userdata_not_owner, content_type="application/json"
+            "/api/register/",
+            userdata_not_owner,
+            content_type="application/json",
         )
         # check created status
         self.assertEqual(response.status_code, 201, response.data)
         # check user exists
-        self.assertTrue(User.objects.filter(
-            username=userdata_not_owner["username"]
-        ).exists())
+        self.assertTrue(
+            User.objects.filter(username=userdata_not_owner["username"]).exists()
+        )
 
     def test_user_creation_is_owner(self):
         userdata_owner = {
@@ -135,8 +139,8 @@ class UserViewsetTestCase(TestCase):
             "restaurant": {
                 "name": "testOwner1s Pizza Joint",
                 "address": "1 Pizza Plaza Philadelphia, PA 12345",
-                "loc": {"type": "Point", "coordinates": [125.6, 10.1]}
-            }
+                "loc": {"type": "Point", "coordinates": [125.6, 10.1]},
+            },
         }
         response = self.client.post(
             "/api/register/", userdata_owner, content_type="application/json"
@@ -144,13 +148,15 @@ class UserViewsetTestCase(TestCase):
         # check created status
         self.assertEqual(response.status_code, 201, response.data)
         # check user exists
-        self.assertTrue(User.objects.filter(
-            username=userdata_owner["owner"]["username"]
-        ).exists())
+        self.assertTrue(
+            User.objects.filter(username=userdata_owner["owner"]["username"]).exists()
+        )
         # check restaurant exists
-        self.assertTrue(Restaurant.objects.filter(
-            name=userdata_owner["restaurant"]["name"]
-        ).exists())
+        self.assertTrue(
+            Restaurant.objects.filter(
+                name=userdata_owner["restaurant"]["name"]
+            ).exists()
+        )
 
     def test_restaurant_owner_field_set(self):
         userdata_owner = {
@@ -158,15 +164,13 @@ class UserViewsetTestCase(TestCase):
             "restaurant": {
                 "name": "testOwner2s Pizza Joint",
                 "address": "2 Pizza Plaza Philadelphia, PA 12345",
-                "loc": {"type": "Point", "coordinates": [125.6, 10.1]}
-            }
+                "loc": {"type": "Point", "coordinates": [125.6, 10.1]},
+            },
         }
         response = self.client.post(
             "/api/register/", userdata_owner, content_type="application/json"
         )
-        restaurant = Restaurant.objects.get(
-            name=userdata_owner["restaurant"]["name"]
-        )
+        restaurant = Restaurant.objects.get(name=userdata_owner["restaurant"]["name"])
         self.assertEqual(response.data["owner"]["id"], restaurant.owner.first().pk)
 
 

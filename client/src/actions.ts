@@ -12,10 +12,10 @@ export type RestaurantsAction = ActionType<typeof restaurantsActions>;
 export type mapDataAction = ActionType<typeof mapDataActions>;
 
 export type Action =
-    | AuthAction
-    | WithDefaultActionHandling<AuthAction>
-    | UserAction
-    | WithDefaultActionHandling<UserAction>
-    | RestaurantsAction
-    | WithDefaultActionHandling<RestaurantsAction>
-    | mapDataAction
+  | AuthAction
+  | WithDefaultActionHandling<AuthAction>
+  | UserAction
+  | WithDefaultActionHandling<UserAction>
+  | RestaurantsAction
+  | WithDefaultActionHandling<RestaurantsAction>
+  | mapDataAction;

@@ -13,25 +13,17 @@ Build application for staging or a release.
 "
 }
 
-if [[ -n "${GIT_COMMIT}" ]]; then
-    GIT_COMMIT="${GIT_COMMIT:0:7}"
-else
-    GIT_COMMIT="$(git rev-parse --short HEAD)"
-fi
-
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
+        #Update dependencies
+        echo "Updating frontend dependencies"
+        docker-compose \
+            run --rm client \
+            yarn install
+
         ./scripts/lint
         ./scripts/test
-
-        # Build static asset bundle
-        docker-compose \
-            run --rm --no-deps \
-            -e NODE_ENV="${NODE_ENV:-production}" \
-            -e INSTALL_ENV="${INSTALL_ENV:-internal}" \
-            -e REACT_APP_GIT_COMMIT="${GIT_COMMIT}" client \
-            yarn build
     fi
 fi

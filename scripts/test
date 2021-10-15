@@ -17,10 +17,18 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
     if [[ "${1:-}" = "--help" ]]; then
         usage
     else
-        # Execute React test suite
+        echo "Compiling frontend source code"
+        # NOTE: This is necessary because tests can pass with TS code that
+        # doesn't compile
         docker-compose \
             run --rm --no-deps -e CI client \
-            yarn test --watchAll=false
+            yarn run compile
+
+        # Execute React test suite
+        echo "Executing frontend test suite"
+        docker-compose \
+            run --rm --no-deps -e CI client \
+            yarn run test --watchAll=false
 
         # Execute Django test suite
         ./scripts/manage test
